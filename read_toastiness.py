@@ -28,10 +28,27 @@ def ShapeDetector(c):
     #returning the what an contour is and its bounding box
     return status
 
-def RoastLevel(c):
-    peri = cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, .04*peri, True)
-    pass
+#this function takes in a grayscale image and a given contour to find
+#the darkening of the specific region bound by the contour
+def RoastLevel(c,img):
+
+    #finding the pixels in a given contour
+    cimg = np.zeros_like(img)
+    cv2.drawContours(cimg, c,0, color=255,thickness =-1)
+
+    #accessing the pixel intensities of the contour region
+    pixs = np.where(cimg==255)
+    print(len(pixs))
+    pix_dark = 0
+    count = 0
+    for pix in pixs:
+        pix_dark += (img[pix[0],pix[1]][0] + img[pix[0],pix[1]][1] + img[pix[0],pix[1]][2])/3.0
+        count +=1
+
+    print pix_dark
+
+    roast_level = pix_dark/float(count)
+    return roast_level
 
 
 if __name__ == "__main__":
@@ -83,8 +100,8 @@ if __name__ == "__main__":
                 cv2.drawContours(image, [c], -1, RED,2)
                 cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
-                roastLevel = RoastLevel(c)
-                cv2.putText(image, roastLevel, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+                roastLevel = RoastLevel(c,gray)
+                cv2.putText(image, str(roastLevel), (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
 
 
 
