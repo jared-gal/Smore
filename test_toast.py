@@ -26,7 +26,7 @@ def ShapeDetector(c):
         status = "MARSHMALLOW"
     
     #returning the contour status as potential mallow or not
-    return status
+    return status, approx
 
 #this function takes in a grayscale image and a given contour to find
 #the darkening of the specific region bound by the contour
@@ -43,17 +43,17 @@ def RoastLevel(c,img):
     pix_dark = 0    #total darkness value of the region
     count = 0       #number of pixels counted
     roast_level = 0 #overall roast level
-
+    print(pixs)
     #ensuring that there are some interior pixels
-    if(len(pixs[0]) > 0):
-
+    if(len(pixs[0]) > 0 and len(pixs[1]) > 0):
+        
         #working through all interior pixels
-        for i in range(len(pixs[0])):
+        for i in range(len(pixs[1])):
         
             #summing up the grayscale value for level of "darkening
             pix_dark += img[pixs[0][i],pixs[1][i]]
             count +=1
-
+            print(str(img[pixs[0][i],pixs[1][i]]))
         #final calculation of darkness
         roast_level = pix_dark/float(count)
     
@@ -83,9 +83,11 @@ if __name__ == "__main__":
         b, image = videoCap.read()
 
         #adjusting for more processing
-        im_resize = imutils.resize(image, width=300)
-        ratio = image.shape[0]/float(im_resize.shape[0])
-    
+        #im_resize = imutils.resize(image, width=300)
+        #ratio = image.shape[0]/float(im_resize.shape[0])
+        im_resize = image
+        ratio = 1
+
         #image processing steps
         gray = cv2.cvtColor(im_resize, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
@@ -102,17 +104,20 @@ if __name__ == "__main__":
             M=cv2.moments(c)
             c_x = 75#int((M["m10"]/M["m00"])*ratio)
             c_y = 75#int((M["m01"]/M["m00"])*ratio)
-            status = ShapeDetector(c)
+            status, approx = ShapeDetector(c)
             if(status == "MARSHMALLOW"):
                 #draw name of shape on contour at (x,y) coords
                 c = (c.astype("float")*ratio).astype('int')
                 cv2.drawContours(image, [c], -1, RED,-1)
-                cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+                #cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
                 roastLevel = RoastLevel(c,gray)
-                cv2.putText(image, str(roastLevel), (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+        
+        cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
 
+        cv2.putText(image, str(approx), (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
 
+        cv2.imshow("Thresh", thresh)
         cv2.imshow("Gray", gray)
         cv2.imshow("Image", image)
         cv2.waitKey(1)
