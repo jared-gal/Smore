@@ -107,8 +107,8 @@ if __name__ == "__main__":
             status, approx = ShapeDetector(c)
             if(status == "MARSHMALLOW"):
                 #draw name of shape on contour at (x,y) coords
-                c = (c.astype("float")*ratio).astype('int')
-                cv2.drawContours(image, [c], -1, RED,-1)
+                c_new = (c.astype("float")*ratio).astype('int')
+                cv2.drawContours(image, [c_new], -1, RED,-1)
                 #cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
                 roastLevel = RoastLevel(c,gray)

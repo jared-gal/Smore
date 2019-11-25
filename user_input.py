@@ -28,7 +28,7 @@ Proceed = False
 size = width,height = 320,240
 WHITE = 255,255,255
 BLACK = 0,0,0
-font = pygame.font.Font(None, 50)
+my_font = pygame.font.Font(None, 25)
 
 #setting up pygame
 screen = pygame.display.set_mode(size)
@@ -50,19 +50,21 @@ default = pygame.image.load("default.jpg")
 #interrupts for the two buttons
 #increase toast level
 def gpio22(channel):
-    global Toast_Level
-    Toast_Level = Toast_Level + 1
-    if(Toast_Level > 10):
-        Toast_Level = 10
-    print("More Toastedness")
+    if Proceed is False:
+        global Toast_Level
+        Toast_Level = Toast_Level + 1
+        if(Toast_Level > 10):
+            Toast_Level = 10
+        print("More Toastedness")
 
 #decrease Toast Level
 def gpio23(channel):
-    global Toast_Level
-    Toast_Level = Toast_Level - 1
-    if(Toast_Level <1):
-        Toast_Level = 1
-    print("Less Toastedness")
+    if Proceed is False:
+        global Toast_Level
+        Toast_Level = Toast_Level - 1
+        if(Toast_Level <1):
+            Toast_Level = 1
+        print("Less Toastedness")
     
 #confirm toast level
 def gpio17(channel):
@@ -82,6 +84,7 @@ def gpio27(channel):
     if Proceed is True:
         Proceed = False
     else:
+        GPIO.cleanup()
         sys.exit()
 
 #a function that determines what image to display on the TFT
@@ -115,19 +118,19 @@ if __name__ == "__main__":
         #reading what image to display
         image_toast = pick_im()
         im_rect = image_toast.get_rect()
-
+        screen.fill(BLACK)
         #blitting desired image to display
-        sreen.blit(image_toast, im_rect)
+        screen.blit(image_toast, im_rect)
 
         if (Proceed is False):
-            my_buttons = {'Select':(300,225), 'Darker':(300,155), 'Lighter':(300,85), 'Quit':(300,15)}
+            my_buttons = {'Select':(290,15), 'Darker':(290,155), 'Lighter':(290,85), 'Quit':(300,225)}
             for my_text, text_pos in my_buttons.items():
                 text_surface = my_font.render(my_text, True, WHITE)
                 rect = text_surface.get_rect(center=text_pos)
                 screen.blit(text_surface, rect)
 
         else:
-            my_buttons = {'Is this the Correct Amount of Toastedness':(160,120), 'Confirm':(300,225), 'Cancel':(300,15)}
+            my_buttons = {'Correct Amount of Toastedness?':(160,120), 'Confirm':(290,15), 'Cancel':(290,225)}
             for my_text, text_pos in my_buttons.items():
                 text_surface = my_font.render(my_text, True, WHITE)
                 rect = text_surface.get_rect(center=text_pos)

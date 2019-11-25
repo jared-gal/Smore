@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import imutils
 import RPi.GPIO as GPIO
+import time
 
 #setting up relevant GPIO pins
 GPIO.setmode(GPIO.BCM)
@@ -19,11 +20,11 @@ Proceed = False
 Next_Cont = False
 RED = (255,0,0)
 WHITE = (255,255,255)
-
+end = False
 #interrupts for the two buttons
 def gpio17(channel):
-    global Proceed
-    Proceed = True
+    global end
+    end = True
     print("Proceeding")
 
 
@@ -40,7 +41,7 @@ def ShapeDetector(c):
     #base case of no mallow
     status = "No Marshmallow Detected"
     peri = cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, .04*peri, True)
+    approx = cv2.approxPolyDP(c, .1*peri, True)
 
     #detecting if a rectangular shape is found (cross section of marshmallow
     if len(approx) == 4:
@@ -52,6 +53,8 @@ def ShapeDetector(c):
 
 
 if __name__ == "__main__":
+
+
 
     #mallow contour
     mc = []
@@ -75,6 +78,10 @@ if __name__ == "__main__":
     b, image = videoCap.read()
     end = False
     #continuously reading in camera data
+
+    #start time
+    start_time = time.time()
+
     while not end:
 
         #reading in a frame
@@ -103,11 +110,11 @@ if __name__ == "__main__":
             c_y = 75
             status = ShapeDetector(c)
             if(status == "MARSHMALLOW"):
-                im = image
+                
 		#convert the contour to a drawable shape
                 c_new = (c.astype("float")*ratio).astype('int')
                 #draw name of shape on contour at (x,y) coords
-                cv2.drawContours(im, [c_new], -1, RED,-1)
+                cv2.drawContours(image, [c_new], -1, RED,-1)
                 cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
                 text = "Contour #" + str(count)
@@ -115,22 +122,23 @@ if __name__ == "__main__":
                 cv2.putText(image, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 count +=1
                 cv2.imshow("Gray", gray)
-                cv2.imshow("Image", im)
+                cv2.imshow("Image", image)
                 cv2.waitKey(1)
 
-
-                while (Next_Cont is False) and (Proceed is False):
-                    if(Proceed is True):
-                        mc = c_new
-                        end = True
-
+                if (time.time() - start_time)>10:
+                    while (Next_Cont is False) :
+                        if(end is True):
+                            mc = c_new
+                            print("Proceeding From Loop")
+                            break
+                        else:
+                            New_Cont = False
         
-        cv2.imshow("Gray", gray)
-        cv2.imshow("Image", im)
-        cv2.waitKey(1)
 
     print("Contour Confirmed")
     cv2.imshow("Gray", gray)
     cv2.imshow("Image", image)
     cv2.waitKey(1)
+    while True:
+        a=1
 
