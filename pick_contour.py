@@ -73,9 +73,9 @@ if __name__ == "__main__":
 
     #reading in an initial frame
     b, image = videoCap.read()
-
+    end = False
     #continuously reading in camera data
-    while True:
+    while not end:
 
         #reading in a frame
         b, image = videoCap.read()
@@ -98,16 +98,16 @@ if __name__ == "__main__":
         for c in conts:
             Proceed = False
             Next_Cont = False
-            #finding the center of the contour using moments
-            M=cv2.moments(c)
+            
             c_x = 75
             c_y = 75
             status = ShapeDetector(c)
             if(status == "MARSHMALLOW"):
-                #convert the contour to a drawable shape
+                im = image
+		#convert the contour to a drawable shape
                 c_new = (c.astype("float")*ratio).astype('int')
                 #draw name of shape on contour at (x,y) coords
-                cv2.drawContours(image, [c_new], -1, RED,-1)
+                cv2.drawContours(im, [c_new], -1, RED,-1)
                 cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
                 text = "Contour #" + str(count)
@@ -115,18 +115,18 @@ if __name__ == "__main__":
                 cv2.putText(image, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 count +=1
                 cv2.imshow("Gray", gray)
-                cv2.imshow("Image", image)
+                cv2.imshow("Image", im)
                 cv2.waitKey(1)
 
 
                 while (Next_Cont is False) and (Proceed is False):
                     if(Proceed is True):
                         mc = c_new
-                        break
+                        end = True
 
         
         cv2.imshow("Gray", gray)
-        cv2.imshow("Image", image)
+        cv2.imshow("Image", im)
         cv2.waitKey(1)
 
     print("Contour Confirmed")
