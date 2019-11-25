@@ -35,18 +35,17 @@ screen = pygame.display.set_mode(size)
 screen.fill(BLACK)
 
 #importing images
-l_0 = pygame.image.load("l_0.pyng")
-l_1 = pygame.image.load("l_1.png")
-l_2 = pygame.image.load("l_2.png")
-l_3 = pygame.image.load("l_3.png")
-l_4 = pygame.image.load("l_4.png")
-l_5 = pygame.image.load("l_5.png")
-l_6 = pygame.image.load("l_6.png")
-l_7 = pygame.image.load("l_7.png")
-l_8 = pygame.image.load("l_8.png")
-l_9 = pygame.image.load("l_9.png")
-l_10 = pygame.image.load("l_10.png")
-default = pygame.image.load("smore.png")
+l_1 = pygame.image.load("l_1.jpg")
+l_2 = pygame.image.load("l_2.jpg")
+l_3 = pygame.image.load("l_3.jpg")
+l_4 = pygame.image.load("l_4.jpg")
+l_5 = pygame.image.load("l_5.jpg")
+l_6 = pygame.image.load("l_6.jpg")
+l_7 = pygame.image.load("l_7.jpg")
+l_8 = pygame.image.load("l_8.jpg")
+l_9 = pygame.image.load("l_9.jpg")
+l_10 = pygame.image.load("l_10.jpg")
+default = pygame.image.load("default.jpg")
 
 #interrupts for the two buttons
 #increase toast level
@@ -61,8 +60,8 @@ def gpio22(channel):
 def gpio23(channel):
     global Toast_Level
     Toast_Level = Toast_Level - 1
-    if(Toast_Level <0):
-        Toast_Level = 0
+    if(Toast_Level <1):
+        Toast_Level = 1
     print("Less Toastedness")
     
 #confirm toast level
@@ -88,7 +87,6 @@ def gpio27(channel):
 #a function that determines what image to display on the TFT
 def pick_im():
     switcher = {
-        0:l_0,
         1:l_1,
         2:l_2,
         3:l_3,
