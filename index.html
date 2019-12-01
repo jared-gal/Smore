@@ -229,7 +229,7 @@
 <div class="container-fluid bg-grey">
   <div class="row">
     <div class="col-sm-4">
-      <img src="Pics/Smore_Stock.jpg" alt="Smore" style="width:250px; height:350px;">
+      <img src="Pics/Smore_Stock.jpg" alt="Smore" style="width:250px; height:250px;">
     </div>
     <div class="col-sm-8">
       <h2>Introduction</h2>
@@ -257,7 +257,7 @@
     </div>
 
     <div class="col-sm-4">
-      <img src="TODO: diagram" alt="Design Diagram" style="width:250px; height:350px;">
+      <img src="Pics/Diagram.png" alt="Design Diagram" style="width:250px; height:350px;">
     </div>
 
   </div>
@@ -272,7 +272,8 @@
   </p>
   <h3> Roasting Apparatus </h3>
   <p>The primary hardware aspect of the tool is the marshmallow toasting capability. The heating element was obtained from a toaster generously donated from Joe, which was disassembled to acquire the mica and tungsten heating element from within. </p>
-  <img src="TODO: toaster pics" alt="Toaster Shots" style="width:250px; height:350px;">
+  <img src="Pics/toaster.jpg" alt="Toaster Shots" style="width:250px; height:350px;">
+  <img src="Pics/Heat_Element.JPG" alt="Toaster Shots" style="width:250px; height:350px;">
   <p>The heating element runs off wall power, which we protected via a 10A 120V relay controlled by the Raspberry Pi. The heating element is elevated from a laser cut acrylic platform using metal standoffs to isolate it from any flammable materials. The marshmallow sits on a pronged fork attached to a servo, which slowly rotates the marshmallow to allow it to roast in a controlled fashion. </p>
   <h3> Monitoring </h3>
   <p>The toasting of the marshmallows  monitored by a Raspberry Pi Cam V2, which is mounted above the roasting apparatus. In order to achieve high quality computer vision for the system to monitor, there is a light situated above the roasting apparatus to illuminate the field of view for the camera. This provides consistent lighting such that our vision feedback is not dependent on the environment in which SMORE will be used. </p>
@@ -280,9 +281,9 @@
   <p>In order for the user to give input and receive feedback on how toasted their marshmallow will turn out, there is a dial on a panel on the front of the device, which a user will turn to select their optimal roasting level.</p>
   <h3> S'more Assembly  </h3>
   <p>The most challenging mechanical aspect of SMORE has been the assembly component. Starting out with the example mechanical claw found at (https://www.youmagine.com/designs/simple-robot-claw), the team modified the designs to account for gripping a larger item and to have automatic actuation via servo. </p>
-  <img src="TODO: claw pics" alt="Ain't no Laws when you're building claws" style="width:250px; height:350px;">
+  <img src="Pics/claw_inspo.JPG" alt="Ain't no Laws when you're building claws" style="width:250px; height:350px;">
   <p>The gripping arms of the claw had to be able to hold a graham cracker without dropping it on both sides, support chocolate or other optional toppings, and drag the marshmallow off the prong and onto the graham cracker plate. The claw also had to allow a user to easily remove the assembled smore after roasting was complete. In order to accomplish this, the claw was redesigned, as shown in figure 4, to have a graham cracker sized crevice to insert and easily remove the components of the smore. The component was 3D printed in the RPL. </p>
-  <img src="TODO: claw CAD" alt=" claw CAD" style="width:250px; height:350px;">
+  <img src="Pics/claw_proto" alt=" claw CAD" style="width:250px; height:350px;">
   <p>The mounting end of the claw was also modified to hold a servo, such that it could be automatically opened and closed on command when the marshmallow was completely toasted. 
 
 After the claw was designed and operating, the rack and pinion was designed to carry the claw to the marshmallow and remove it from the prong. In order to accomplish this, two mounts were designed to hold the claw up by the servo, which would sit on a sliding panel. The panel would be pushed back and forth by linear teeth interfacing with a gear attached to a stepper motor, which would push the platform back and forth. The claw-panel assembly was kept in place by the rack, which the panel slid back and forth along. The entire rack and pinion holder system was designed to be laser cut out of acrylic for easy prototyping and iterating. 
