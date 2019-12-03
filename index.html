@@ -280,8 +280,13 @@
   </p>
   <h3> Roasting Apparatus </h3>
   <p>The primary hardware aspect of the tool is the marshmallow toasting capability. The heating element was obtained from a toaster generously donated from Joe, which was disassembled to acquire the mica and tungsten heating element from within. </p>
-  <img src="Pics/toaster.jpg" alt="Toaster Shots" style="width:250px; height:250px;" class="center">
-  <img src="Pics/heat_element.JPG" alt="Toaster Shots" style="width:350px; height:250px;">
+  <div class="col-sm-6">
+      <img src="Pics/toaster.jpg" alt="Toaster Shots" style="width:250px; height:250px;" class="center">
+  </div>
+  <div class="col-sm-6">
+      <img src="Pics/heat_element.JPG" alt="Toaster Shots" style="width:350px; height:250px;">
+  </div>
+  
   <p>The heating element runs off wall power, which we protected via a 10A 120V relay controlled by the Raspberry Pi. The heating element is elevated from a laser cut acrylic platform using metal standoffs to isolate it from any flammable materials. The marshmallow sits on a pronged fork attached to a servo, which slowly rotates the marshmallow to allow it to roast in a controlled fashion. </p>
   <h3> Monitoring </h3>
   <p>The toasting of the marshmallows  monitored by a Raspberry Pi Cam V2, which is mounted above the roasting apparatus. In order to achieve high quality computer vision for the system to monitor, there is a light situated above the roasting apparatus to illuminate the field of view for the camera. This provides consistent lighting such that our vision feedback is not dependent on the environment in which SMORE will be used. </p>
