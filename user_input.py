@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/ python
 
 #this is a script to take basic user input
 
@@ -12,13 +12,6 @@ pygame.init()
 #TFT Stuff
 #TODO
 
-
-#setting up relevant GPIO pins
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(22, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
 
 #global variables
@@ -103,25 +96,37 @@ def pick_im():
     }
     return switcher.get(Toast_Level, default)
 
-if __name__ == "__main__":
+def main():
+   
+    #setting up relevant GPIO pins
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(22, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
+
+    #declaring the global variables of program
+    global Proceed
+    global Confirmed
+    global Toast_Level
+
+    print("main")
     #setting up callbacks
     GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
     GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 300)
     GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 300)
     GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 300)
     
-    
     #continuously updating TFT
     while not Confirmed:
-
         #reading what image to display
         image_toast = pick_im()
         im_rect = image_toast.get_rect()
         screen.fill(BLACK)
         #blitting desired image to display
         screen.blit(image_toast, im_rect)
-
+        
         if (Proceed is False):
             my_buttons = {'Select':(290,15), 'Darker':(290,155), 'Lighter':(290,85), 'Quit':(300,225)}
             for my_text, text_pos in my_buttons.items():
@@ -135,9 +140,10 @@ if __name__ == "__main__":
                 text_surface = my_font.render(my_text, True, WHITE)
                 rect = text_surface.get_rect(center=text_pos)
                 screen.blit(text_surface, rect)
-
+        
         #flipping the display
         pygame.display.flip()
-
+    GPIO.cleanup()
+    return Toast_Level
 
 

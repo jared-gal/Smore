@@ -9,11 +9,6 @@ import imutils
 import RPi.GPIO as GPIO
 import time
 
-#setting up relevant GPIO pins
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-
 
 #glodal Variables
 Proceed = False
@@ -21,14 +16,17 @@ Next_Cont = False
 RED = (255,0,0)
 WHITE = (255,255,255)
 end = False
+
+
 #interrupts for the two buttons
-def gpio17(channel):
+#17 selects a contour
+def gpio17_pc(channel):
     global end
     end = True
     print("Proceeding")
 
-
-def gpio27(channel):
+#27 says to cycle to another contour
+def gpio27_pc(channel):
     global Next_Cont
     Next_Cont = True
     print("Next Contour")
@@ -52,16 +50,29 @@ def ShapeDetector(c):
     return status
 
 
-if __name__ == "__main__":
+def main():
+    
+
+
+    #defining global variables
+    global Proceed
+    global Next_Cont
+    global end
+
+    #setting up relevant GPIO pins
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
 
 
-    #mallow contour
+    
+    #to hold the final mallow contour
     mc = []
     
     #setting up callbacks
-    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
-    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 300)
+    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17_pc, bouncetime = 300)
+    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27_pc, bouncetime = 300)
 
     #dasic video capture object
     videoCap = cv2.VideoCapture(0)
@@ -125,7 +136,7 @@ if __name__ == "__main__":
                 cv2.imshow("Image", image)
                 cv2.waitKey(1)
 
-                if (time.time() - start_time)>10:
+                if (time.time() - start_time)>5:
                     while (Next_Cont is False) :
                         if(end is True):
                             mc = c_new
@@ -139,6 +150,6 @@ if __name__ == "__main__":
     cv2.imshow("Gray", gray)
     cv2.imshow("Image", image)
     cv2.waitKey(1)
-    while True:
-        a=1
+    GPIO.cleanup()
+    return mc
 
