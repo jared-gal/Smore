@@ -99,13 +99,13 @@ def main():
         b, image = videoCap.read()
 
         #adjusting for more processing
-        im_resize = imutils.resize(image, width=300)
-        ratio = image.shape[0]/float(im_resize.shape[0])
+        #im_resize = imutils.resize(image, width=300)
+        #ratio = image.shape[0]/float(im_resize.shape[0])
     
         #image processing steps
-        gray = cv2.cvtColor(im_resize, cv2.COLOR_BGR2GRAY)  #grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
-        thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
+        thresh = cv2.threshold(blurred, 180, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
 
         #contour finding and rectangle identification
         conts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -113,43 +113,44 @@ def main():
         
         count = 0
         #find shapes based on contours
-        for c in conts:
+        for i in range(len(conts)):
             Proceed = False
             Next_Cont = False
             
             c_x = 75
             c_y = 75
-            status = ShapeDetector(c)
-            if(status == "MARSHMALLOW"):
+            status = ShapeDetector(conts[i])
+            n_im = image.copy()
+            if True:
                 
 		#convert the contour to a drawable shape
-                c_new = (c.astype("float")*ratio).astype('int')
+                #c_new = (c.astype("float")*ratio).astype('int')
                 #draw name of shape on contour at (x,y) coords
-                cv2.drawContours(image, [c_new], -1, RED,-1)
-                cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+                cv2.drawContours(n_im, conts, i, RED,-1)
+                cv2.putText(n_im, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 #displaying the associated toastedness
                 text = "Contour #" + str(count)
                 
-                cv2.putText(image, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-                count +=1
+                cv2.putText(n_im, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
                 cv2.imshow("Gray", gray)
-                cv2.imshow("Image", image)
+                cv2.imshow("Image", n_im)
                 cv2.waitKey(1)
 
                 if (time.time() - start_time)>5:
-                    while (Next_Cont is False) :
+                    while (Next_Cont is False):
                         if(end is True):
-                            mc = c_new
-                            print("Proceeding From Loop")
+                            c = conts[i]
+                            
+                            print("Cont Conf #")
+                            print(i)
+                            GPIO.cleanup()
+                            return c,i
                             break
                         else:
-                            New_Cont = False
-        
+                           a=1 
 
-    print("Contour Confirmed")
-    cv2.imshow("Gray", gray)
-    cv2.imshow("Image", image)
-    cv2.waitKey(1)
+
+    print("Contour Error")
     GPIO.cleanup()
-    return mc
+    return [],-1
 

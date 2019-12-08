@@ -3,13 +3,13 @@
 #this script is to run the sub programs of SMORE project
 import user_input as usr
 import pick_contour as pc
-import read_toastiness as rt
+import read_toast_update as rt
 
 if __name__ == "__main__":
-    #getting the desired contour for the mallow
-    C = pc.main()
-    print("Returned Contour is:")
-    print (C)
+   # getting the desired contour for the mallow
+    C,I = pc.main()
+    print("Returned Contour Num is:")
+    print (I)
 
     #getting the user selected level of toastedness
     TL = usr.main()

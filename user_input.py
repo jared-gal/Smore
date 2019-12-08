@@ -1,4 +1,4 @@
-#! /usr/bin/ python
+#!/usr/bin/python
 
 #this is a script to take basic user input
 
@@ -42,7 +42,7 @@ default = pygame.image.load("default.jpg")
 
 #interrupts for the two buttons
 #increase toast level
-def gpio22(channel):
+def gpio23(channel):
     if Proceed is False:
         global Toast_Level
         Toast_Level = Toast_Level + 1
@@ -51,7 +51,7 @@ def gpio22(channel):
         print("More Toastedness")
 
 #decrease Toast Level
-def gpio23(channel):
+def gpio22(channel):
     if Proceed is False:
         global Toast_Level
         Toast_Level = Toast_Level - 1

@@ -10,6 +10,12 @@ import sys
 import cv2
 import numpy as np
 import imutils
+import RPi.GPIO as GPIO
+
+#setting up GPIO to turn mallow
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(5, GPIO.OUT)
+
 
 #basic color definitions
 RED = (255,0,0)
@@ -62,9 +68,17 @@ def main(TL,C):
     #global
     global Mallow_Cont
     global Toast_level
+
     Mallow_Cont = C
     Toast_Level = TL
-    
+    #setting up GPIO to turn mallow
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(5, GPIO.OUT)
+
+
+    pin = GPIO.PWM(5,1)
+    pin.start(0)
+
     #basic video capture object
     videoCap = cv2.VideoCapture(0)
 
@@ -78,19 +92,29 @@ def main(TL,C):
 
     #reading in an initial frame
     b, image = videoCap.read()
+    
+    #starting the rotating of skewer
+    pin.ChangeFrequency(46.685)
+    pin.ChangeDutyCycle(6.629)
+    
+    #the roast level of mallow (255 white 0 black)
+    roastLevel = 255
+
+    #converting toast level to darkness value
+    cookLevel = 110 - Toast_Level*5
 
     #continuously reading in camera data
-    while True:
+    while True: #roastLevel > cookLevel:
 
         #reading in a frame
         b, image = videoCap.read()
 
         #adjusting for more processing
-        im_resize = imutils.resize(image, width=300)
-        ratio = image.shape[0]/float(im_resize.shape[0])
+        #im_resize = imutils.resize(image, width=300)
+        #ratio = image.shape[0]/float(im_resize.shape[0])
     
         #image processing steps
-        gray = cv2.cvtColor(im_resize, cv2.COLOR_BGR2GRAY)  #grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
 
         
         #displaying the toastedness level of the desired contour
@@ -100,13 +124,14 @@ def main(TL,C):
         
         #draw contour 
         cv2.drawContours(image, [Mallow_Cont], -1, RED,-1)
-        cv2.putText(image, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+        cv2.putText(image, "Roast_Level", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
         
         #displaying the associated toastedness
-        roastLevel = RoastLevel(c,gray)
+        roastLevel = RoastLevel(gray)
         cv2.putText(image, str(roastLevel), (300,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
 
 
         cv2.imshow("Gray", gray)
         cv2.imshow("Image", image)
         cv2.waitKey(1)
+    pin.ChangeDutyCycle(0)
