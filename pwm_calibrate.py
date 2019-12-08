@@ -4,8 +4,8 @@ import os
 import time
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(5, GPIO.OUT)
-servo_pin = GPIO.PWM(5, 46.51)
+GPIO.setup(6, GPIO.OUT)
+servo_pin = GPIO.PWM(6, 46.51)
 servo_pin.start(6.977)
 usr_in = "fish"
 
