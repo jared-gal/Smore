@@ -27,7 +27,7 @@ def main():
     GPIO.output(19,0)
     pin_step.start(50)
     start_time = time.time()
-    while (time.time() - start_time) <9:
+    while (time.time() - start_time) <4:
         time.sleep(.01)
     pin_step.start(0)
 
@@ -43,7 +43,7 @@ def main():
     GPIO.output(19,1)
     pin_step.start(50)
     start_time = time.time()
-    while (time.time() - start_time) <8.8:
+    while (time.time() - start_time) <4:
         time.sleep(.01)
     pin_step.start(0)
 

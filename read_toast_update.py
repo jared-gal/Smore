@@ -21,13 +21,17 @@ WHITE = (255,255,255)
 Mallow_Cont = []
 #desired toastedness of the mallow
 Toast_Level = 0
-
+#average array
+Avg_Toast = []
+Index = 0
 
 #this function takes in a grayscale image and a given contour to find
 #the darkening of the specific region bound by the contour
 def RoastLevel(img):
 
     global Mallow_Cont
+    global Avg_Toast
+    global Index
     c = Mallow_Cont
     
     #finding the pixels in a given contour and creating a mask of those pixels
@@ -54,8 +58,17 @@ def RoastLevel(img):
 
         #final calculation of darkness
         roast_level = pix_dark/float(count)
+        if  len(Avg_Toast) is 0:
+            Avg_Toast = [roast_level] * 12
+            print(len(Avg_Toast))
+            Index = 0
+        else:
+            Avg_Toast[Index] = roast_level
+            print("updated")
+            Index = Index + 1
+            Index = Index % 12
     
-    return roast_level
+    return sum(Avg_Toast)/len(Avg_Toast)
 
 
 def main(TL,C):
@@ -63,7 +76,7 @@ def main(TL,C):
     #global
     global Mallow_Cont
     global Toast_level
-
+    
     Mallow_Cont = C
     Toast_Level = TL
     #setting up GPIO to turn mallow
@@ -101,7 +114,8 @@ def main(TL,C):
     print (cookLevel)
     time_start = time.time()
     #continuously reading in camera data
-    while roastLevel > cookLevel:
+    start = time.time()
+    while roastLevel > cookLevel and (time.time() - start) < 10 :
         if(time.time()-time_start > .2):
             time_start = time.time()
             #reading in a frame
@@ -110,14 +124,15 @@ def main(TL,C):
             #adjusting for more processing
             #im_resize = imutils.resize(image, width=300)
             #ratio = image.shape[0]/float(im_resize.shape[0])
-    
+            image = imutils.resize(image, width = 320, height =240)
+            image = image[60:220, 90:300]
             #image processing steps
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
 
         
             #displaying the toastedness level of the desired contour
             #location of printing
-            c_x = 300  
+            c_x = 50 
             c_y = 75
         
             #draw contour 
@@ -126,7 +141,7 @@ def main(TL,C):
         
             #displaying the associated toastedness
             roastLevel = RoastLevel(gray)
-            cv2.putText(image, str(roastLevel), (300,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+            cv2.putText(image, str(roastLevel), (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
 
 
             cv2.imshow("Gray", gray)

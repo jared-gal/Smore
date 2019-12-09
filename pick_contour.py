@@ -101,11 +101,12 @@ def main():
         #adjusting for more processing
         #im_resize = imutils.resize(image, width=300)
         #ratio = image.shape[0]/float(im_resize.shape[0])
-    
+        image = imutils.resize(image, width=320, height = 240)
+        image = image[60:220, 90:300] 
         #image processing steps
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
-        thresh = cv2.threshold(blurred, 180, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
+        thresh = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
 
         #contour finding and rectangle identification
         conts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
