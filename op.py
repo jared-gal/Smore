@@ -3,8 +3,9 @@
 #this script is to run the sub programs of SMORE project
 import user_input as usr
 import pick_contour as pc
-import read_toast_update as rt
+import rt_one_side as rt
 import retrieve as re
+import time
 
 if __name__ == "__main__":
    # getting the desired contour for the mallow
@@ -19,6 +20,9 @@ if __name__ == "__main__":
     #rt.main(TL,C)   
     
     print ("done")
+    print("waiting for 10 seconds to cool off")
+    #time.sleep(10)
+
     #script that retrieves the mallow and makes the smore
     #TODO
     re.main()

@@ -26,6 +26,7 @@ Toast_Level = 0
 Avg_Toast = []
 start_toast = 255
 Index = 0
+init_rt = True
 
 #this function takes in a grayscale image and a given contour to find
 #the darkening of the specific region bound by the contour
@@ -35,6 +36,7 @@ def RoastLevel(img):
     global Avg_Toast
     global Index
     global start_toast
+    global init_rt
     c = Mallow_Cont
     
     #finding the pixels in a given contour and creating a mask of those pixels
@@ -61,18 +63,16 @@ def RoastLevel(img):
 
         #final calculation of darkness
         roast_level = pix_dark/float(count)
-        if  len(Avg_Toast) is 0:
-            Avg_Toast = [roast_level] * 12
-            start_toast = sum(Avg_Toast)/len(Avg_Toast)
+
+        #if just starting then the first reading is of the untoasted side
+        #so we want a base darkness value
+        if  init_rt is True:
+            init_rt = False
+            start_toast = roast_level
             print("starting roast level is")
             print(start_toast)
-            Index = 0
-        else:
-            Avg_Toast[Index] = roast_level
-            Index = Index + 1
-            Index = Index % 12
     
-    return sum(Avg_Toast)/len(Avg_Toast)
+    return roast_level
 
 
 def main(TL,C):
@@ -81,6 +81,9 @@ def main(TL,C):
     global Mallow_Cont
     global Toast_level
     global start_toast
+    global init_rt
+
+    init_rt = True
     
     Mallow_Cont = C
     Toast_Level = TL
@@ -89,9 +92,9 @@ def main(TL,C):
     GPIO.setup(5, GPIO.OUT)
 
 
-    pin = GPIO.PWM(5,46.554)
-
-
+    pin = GPIO.PWM(5,46.486)
+    #ccw at .1 is  46.486 w dc of 7.063
+    #cw is 46.554 with 6.89
     #basic video capture object
     videoCap = cv2.VideoCapture(0)
 
@@ -105,25 +108,38 @@ def main(TL,C):
 
     #reading in an initial frame
     b, image = videoCap.read()
-    
-    #starting the rotating of skewer
-    
-    pin.start(6.89)
-    
-    #the roast level of mallow (255 white 0 black)
-    roastLevel = 255
-    start_toast = 255
+
+    image = imutils.resize(image, width = 320, height =240)
+    image = image[70:220, 70:220]
+    #image processing steps
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
+
+    #init roast level
+    roastLevel = RoastLevel(gray)
+
+    pin.start(7.063)
+    time.sleep(.5)
+    pin.ChangeDutyCycle(0)
+
     #converting toast level to darkness value
     cookLevel = 20 +  Toast_Level*5
     print("Cook Level is")
     print (cookLevel)
     time_start = time.time() 
-    init = True
+    update = True
 
     while roastLevel - start_toast < cookLevel :
-        if(time.time()-time_start > .2 or init is True):
-            time_start = time.time()
-            init = False
+        if True:
+            if(time.time()-time_start) > 20 :
+                print("start_toast is")
+                print(start_toast)
+                #rotating mallow back into view
+                pin.ChangeFrequency(46.554)
+                pin.ChangeDutyCycle(6.89)
+                time.sleep(1.8)
+                pin.ChangeDutyCycle(0)
+                update = True
+    
             #reading in a frame
             b, image = videoCap.read()
 
@@ -134,21 +150,33 @@ def main(TL,C):
             image = image[70:220, 70:200]
             #image processing steps
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
+            #displaying the associated toastedness
+            if update is True:
+                roastLevel = 0
+                count = 0
+                for i in range(0,5):
+                    count += 1
+                    roastLevel += RoastLevel(gray)
+                roastLevel = roastLevel/float(count)
+                time.sleep(.5)
+                #rotating mallow back to heat
+                pin.ChangeFrequency(46.486)
+                pin.ChangeDutyCycle(7.063)
+                time.sleep(1.8)
+                pin.ChangeDutyCycle(0)
+                time_start = time.time()
+                update = False
 
-        
             #displaying the toastedness level of the desired contour
             #location of printing
             c_x = 50 
             c_y = 75
         
-            #draw contour 
+            #draw contour and output roast val 
             cv2.drawContours(image, [Mallow_Cont], -1, RED,-1)
-            cv2.putText(image, "Roast_Level", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-        
-            #displaying the associated toastedness
-            roastLevel = RoastLevel(gray)
+            cv2.putText(image, "Last Read Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
             cv2.putText(image, str(roastLevel), (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-
+            
 
             cv2.imshow("Gray", gray)
             cv2.imshow("Image", image)
