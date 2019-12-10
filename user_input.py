@@ -9,11 +9,6 @@ import os
 import sys
 pygame.init()
 
-#TFT Stuff
-#TODO
-
-
-
 #global variables
 Toast_Level = 0
 Confirmed = False
@@ -97,7 +92,9 @@ def pick_im():
     return switcher.get(Toast_Level, default)
 
 def main():
-   
+
+
+
     #setting up relevant GPIO pins
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(22, GPIO.IN, pull_up_down = GPIO.PUD_UP)
@@ -113,13 +110,14 @@ def main():
 
     print("main")
     #setting up callbacks
-    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
-    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 300)
-    GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 300)
-    GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 300)
+    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 500)
+    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 500)
+    GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 500)
+    GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 500)
     
     #continuously updating TFT
     while not Confirmed:
+        print("Procee")
         #reading what image to display
         image_toast = pick_im()
         im_rect = image_toast.get_rect()
@@ -144,6 +142,7 @@ def main():
         #flipping the display
         pygame.display.flip()
     GPIO.cleanup()
+    print(Toast_Level)
     return Toast_Level
 
 

@@ -8,6 +8,7 @@ import numpy as np
 import imutils
 import RPi.GPIO as GPIO
 import time
+import os
 
 
 #glodal Variables
@@ -42,7 +43,7 @@ def ShapeDetector(c):
     approx = cv2.approxPolyDP(c, .01*peri, True)
 
     #detecting if a rectangular shape is found (cross section of marshmallow
-    if peri > 200:
+    if peri > 100:
         status = "Valid"
 
     #returning the contour status as potential mallow or not
@@ -51,6 +52,11 @@ def ShapeDetector(c):
 
 def main():
     
+    #os.putenv('SDL_VIDEODRIVER','fbcon')
+    #os.putenv('SDL_FBDEV','/dev/fb1')
+    #os.putenv('SDL_MOUSEDRV', 'TSLIB')
+    #os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
+
 
 
     #defining global variables
@@ -63,7 +69,9 @@ def main():
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
     GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-
+    GPIO.setup(5, GPIO.OUT)
+    pin = GPIO.PWM(5,50)
+    pin.start(2.5)
 
     
     #to hold the final mallow contour
@@ -105,7 +113,7 @@ def main():
         #image processing steps
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
-        thresh = cv2.threshold(blurred, 120, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
+        thresh = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
 
         #contour finding and rectangle identification
         conts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -123,7 +131,7 @@ def main():
             n_im = image.copy()
             if status == "Valid":
                 
-		#convert the contour to a drawable shape
+        #convert the contour to a drawable shape
                 #c_new = (c.astype("float")*ratio).astype('int')
                 #draw name of shape on contour at (x,y) coords
                 cv2.drawContours(n_im, conts, i, RED,-1)
@@ -132,7 +140,7 @@ def main():
                 text = "Contour #" + str(count)
                 
                 cv2.putText(n_im, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-                cv2.imshow("Gray", gray)
+                #cv2.imshow("Gray", gray)
                 cv2.imshow("Image", n_im)
                 cv2.waitKey(1)
 

@@ -24,7 +24,7 @@ def main():
 
     #for 2 seconds move the claw forward
     print("FORWARD")
-    GPIO.output(19,0)
+    GPIO.output(19,1)
     pin_step.start(50)
     start_time = time.time()
     while (time.time() - start_time) <5:
@@ -40,7 +40,7 @@ def main():
     pin_claw.start(0)
 
     #for 2 seconds we withdraw the claw
-    GPIO.output(19,1)
+    GPIO.output(19,0)
     pin_step.start(50)
     start_time = time.time()
     while (time.time() - start_time) <6:

@@ -28,15 +28,16 @@ start_toast = 255
 Index = 0
 init_rt = True
 
+def gpio17(channel):
+    print("forced retrieval")
+    sys.exit()
+
+
 #this function takes in a grayscale image and a given contour to find
 #the darkening of the specific region bound by the contour
 def RoastLevel(img):
 
     global Mallow_Cont
-    global Avg_Toast
-    global Index
-    global start_toast
-    global init_rt
     c = Mallow_Cont
     
     #finding the pixels in a given contour and creating a mask of those pixels
@@ -66,11 +67,6 @@ def RoastLevel(img):
 
         #if just starting then the first reading is of the untoasted side
         #so we want a base darkness value
-        if  init_rt is True:
-            init_rt = False
-            start_toast = roast_level
-            print("starting roast level is")
-            print(start_toast)
     
     return roast_level
 
@@ -91,8 +87,8 @@ def main(TL,C):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(5, GPIO.OUT)
 
+    GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-    pin = GPIO.PWM(5,46.486)
     #ccw at .1 is  46.486 w dc of 7.063
     #cw is 46.554 with 6.89
     #basic video capture object
@@ -105,7 +101,9 @@ def main(TL,C):
     else:
         print("camera found")
 
-
+    pin = GPIO.PWM(5,50)
+    pin.start(2.5)
+    print("Turn up")
     #reading in an initial frame
     b, image = videoCap.read()
 
@@ -115,73 +113,82 @@ def main(TL,C):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
 
     #init roast level
-    roastLevel = RoastLevel(gray)
+    count = 0
+    roastLevel = 0
+    for i in range(0,5):
+        count += 1
+        roastLevel += RoastLevel(gray)
 
-    pin.start(7.063)
-    time.sleep(.5)
+    start_toast = roastLevel/float(count)
+    roastLevel = start_toast
+    print("turn down")
+    pin.ChangeDutyCycle(7.5)
+    time.sleep(2)
     pin.ChangeDutyCycle(0)
 
     #converting toast level to darkness value
-    cookLevel = 20 +  Toast_Level*5
+    cookLevel = 10 +  Toast_Level*2
     print("Cook Level is")
     print (cookLevel)
     time_start = time.time() 
     update = True
 
-    while roastLevel - start_toast < cookLevel :
-        if True:
+    while start_toast-roastLevel < cookLevel :
+        #every 20 seconds we recheck toastedness
             if(time.time()-time_start) > 20 :
-                print("start_toast is")
-                print(start_toast)
                 #rotating mallow back into view
-                pin.ChangeFrequency(46.554)
-                pin.ChangeDutyCycle(6.89)
-                time.sleep(1.8)
+                pin.ChangeDutyCycle(2.5)
+                time.sleep(1.7)
                 pin.ChangeDutyCycle(0)
-                update = True
-    
-            #reading in a frame
-            b, image = videoCap.read()
 
-            #adjusting for more processing
-            #im_resize = imutils.resize(image, width=300)
-            #ratio = image.shape[0]/float(im_resize.shape[0])
-            image = imutils.resize(image, width = 320, height =240)
-            image = image[70:220, 70:200]
-            #image processing steps
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
-            #displaying the associated toastedness
-            if update is True:
+                #updating roast level based on 5 sample average
                 roastLevel = 0
                 count = 0
                 for i in range(0,5):
+                    #reading in a frame
+                    b, image = videoCap.read()
+
+                    #adjusting for more processing
+                    image = imutils.resize(image, width = 320, height =240)
+                    image = image[70:220, 70:200]
+                    #image processing steps
+                    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
+                    #calculating toastedness
                     count += 1
                     roastLevel += RoastLevel(gray)
+
                 roastLevel = roastLevel/float(count)
-                time.sleep(.5)
+
                 #rotating mallow back to heat
-                pin.ChangeFrequency(46.486)
-                pin.ChangeDutyCycle(7.063)
-                time.sleep(1.8)
+                pin.ChangeDutyCycle(7.5)
+                time.sleep(1.7)
                 pin.ChangeDutyCycle(0)
                 time_start = time.time()
-                update = False
+
+            #reading in a frame when not processing
+            b, image = videoCap.read()
+
+            #adjusting for more processing
+            image = imutils.resize(image, width = 320, height =240)
+            image = image[70:220, 70:200]
 
             #displaying the toastedness level of the desired contour
             #location of printing
-            c_x = 50 
+            c_x = 0 
             c_y = 75
         
             #draw contour and output roast val 
-            cv2.drawContours(image, [Mallow_Cont], -1, RED,-1)
-            cv2.putText(image, "Last Read Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+            cv2.drawContours(image, [Mallow_Cont], -1, RED,1)
+            cv2.putText(image, "Last Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
             cv2.putText(image, str(roastLevel), (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
             
 
-            cv2.imshow("Gray", gray)
+            image = imutils.resize(image, width = 320, height = 240)
             cv2.imshow("Image", image)
             cv2.waitKey(1)
     print("final roast level is:")
     print (roastLevel)
+    pin.ChangeDutyCycle(7)
+    time.sleep(.5)
     pin.ChangeDutyCycle(0)
     GPIO.cleanup()
