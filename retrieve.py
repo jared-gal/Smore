@@ -18,7 +18,7 @@ def main():
     print ("OPEN CLAAW")
     pin_claw.start(7.236)
     start_time = time.time()
-    while (time.time() - start_time) <.9:
+    while (time.time() - start_time) <.2:
         time.sleep(.01)
     pin_claw.start(0)
 
@@ -27,7 +27,7 @@ def main():
     GPIO.output(19,0)
     pin_step.start(50)
     start_time = time.time()
-    while (time.time() - start_time) <4:
+    while (time.time() - start_time) <5:
         time.sleep(.01)
     pin_step.start(0)
 
@@ -35,7 +35,7 @@ def main():
     pin_claw.ChangeFrequency(46.642)
     pin_claw.start(6.716)
     start_time = time.time()
-    while (time.time() - start_time) <.9:
+    while (time.time() - start_time) <1.2:
         time.sleep(.01)
     pin_claw.start(0)
 
@@ -43,7 +43,7 @@ def main():
     GPIO.output(19,1)
     pin_step.start(50)
     start_time = time.time()
-    while (time.time() - start_time) <4:
+    while (time.time() - start_time) <6:
         time.sleep(.01)
     pin_step.start(0)
 

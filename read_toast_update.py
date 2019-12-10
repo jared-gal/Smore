@@ -21,8 +21,10 @@ WHITE = (255,255,255)
 Mallow_Cont = []
 #desired toastedness of the mallow
 Toast_Level = 0
+
 #average array
 Avg_Toast = []
+start_toast = 255
 Index = 0
 
 #this function takes in a grayscale image and a given contour to find
@@ -32,6 +34,7 @@ def RoastLevel(img):
     global Mallow_Cont
     global Avg_Toast
     global Index
+    global start_toast
     c = Mallow_Cont
     
     #finding the pixels in a given contour and creating a mask of those pixels
@@ -60,11 +63,12 @@ def RoastLevel(img):
         roast_level = pix_dark/float(count)
         if  len(Avg_Toast) is 0:
             Avg_Toast = [roast_level] * 12
-            print(len(Avg_Toast))
+            start_toast = sum(Avg_Toast)/len(Avg_Toast)
+            print("starting roast level is")
+            print(start_toast)
             Index = 0
         else:
             Avg_Toast[Index] = roast_level
-            print("updated")
             Index = Index + 1
             Index = Index % 12
     
@@ -76,6 +80,7 @@ def main(TL,C):
     #global
     global Mallow_Cont
     global Toast_level
+    global start_toast
     
     Mallow_Cont = C
     Toast_Level = TL
@@ -107,17 +112,18 @@ def main(TL,C):
     
     #the roast level of mallow (255 white 0 black)
     roastLevel = 255
-
+    start_toast = 255
     #converting toast level to darkness value
-    cookLevel = 110 - Toast_Level*5
+    cookLevel = 10 +  Toast_Level*5
     print("Cook Level is")
     print (cookLevel)
-    time_start = time.time()
-    #continuously reading in camera data
-    start = time.time()
-    while roastLevel > cookLevel and (time.time() - start) < 10 :
-        if(time.time()-time_start > .2):
+    time_start = time.time() 
+    init = True
+
+    while roastLevel - start_toast < cookLevel :
+        if(time.time()-time_start > .2 or init is True):
             time_start = time.time()
+            init = False
             #reading in a frame
             b, image = videoCap.read()
 
@@ -125,7 +131,7 @@ def main(TL,C):
             #im_resize = imutils.resize(image, width=300)
             #ratio = image.shape[0]/float(im_resize.shape[0])
             image = imutils.resize(image, width = 320, height =240)
-            image = image[60:220, 90:300]
+            image = image[60:220, 60:300]
             #image processing steps
             gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
 
@@ -147,5 +153,7 @@ def main(TL,C):
             cv2.imshow("Gray", gray)
             cv2.imshow("Image", image)
             cv2.waitKey(1)
+    print("final roast level is:")
+    print (roast_level)
     pin.ChangeDutyCycle(0)
     GPIO.cleanup()

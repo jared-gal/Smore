@@ -8,16 +8,17 @@ import retrieve as re
 
 if __name__ == "__main__":
    # getting the desired contour for the mallow
-    C,I = pc.main()
+    #C,I = pc.main()
 
     #getting the user selected level of toastedness
-    TL = usr.main()
+    #TL = usr.main()
 
     #reading the toastiness of the contour until desired level is reached
     #TODO
     #make read toast update have rolling average of ~2 sec
-    rt.main(TL,C)   
-
+    #rt.main(TL,C)   
+    
+    print ("done")
     #script that retrieves the mallow and makes the smore
     #TODO
     re.main()

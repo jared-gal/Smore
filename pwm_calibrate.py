@@ -5,8 +5,8 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.OUT)
-servo_pin = GPIO.PWM(6, 46.51)
-servo_pin.start(6.977)
+servo_pin = GPIO.PWM(6, 46.598)
+servo_pin.start(6.803)
 usr_in = "fish"
 
 while usr_in != "done":
