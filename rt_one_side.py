@@ -2,8 +2,7 @@
 
 #this is a script to read in camera data of a detected marshmallow, and read it's toastedness
 #toastedness will be done via averaging pixel data of detected marshmallow shape
-#script also rotates the toasting stepper and 
-#TODO
+#script also 
 #controls heating element activation
 
 import sys
@@ -19,21 +18,22 @@ WHITE = (255,255,255)
 
 #contour that is the mallow
 Mallow_Cont = []
+enter_retrieval = False
+
 #desired toastedness of the mallow
 Toast_Level = 0
 
-#average array
-Avg_Toast = []
+#starting toast level
 start_toast = 255
-Index = 0
-init_rt = True
 
+#forced exit from program
 def gpio17(channel):
     print("forced retrieval")
-    sys.exit()
+    global enter_retrieval 
+    enter_retrieval = True
 
 
-#this function takes in a grayscale image and a given contour to find
+#this function takes in a grayscale image and uses the mallow contour to find
 #the darkening of the specific region bound by the contour
 def RoastLevel(img):
 
@@ -64,33 +64,27 @@ def RoastLevel(img):
 
         #final calculation of darkness
         roast_level = pix_dark/float(count)
-
-        #if just starting then the first reading is of the untoasted side
-        #so we want a base darkness value
     
     return roast_level
 
-
+#takes the toastedness level and mallow contour from prior scripts,
+#this function will monitor the toastedness of a side of the mallow 
 def main(TL,C):
 
-    #global
+    #global variables necessary
     global Mallow_Cont
     global Toast_level
-    global start_toast
-    global init_rt
-
-    init_rt = True
     
     Mallow_Cont = C
     Toast_Level = TL
+    
     #setting up GPIO to turn mallow
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(5, GPIO.OUT)
 
+    #interrupt to force mallow retrieval if necessary
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-    #ccw at .1 is  46.486 w dc of 7.063
-    #cw is 46.554 with 6.89
     #basic video capture object
     videoCap = cv2.VideoCapture(0)
 
@@ -133,9 +127,10 @@ def main(TL,C):
     time_start = time.time() 
     update = True
 
-    while start_toast-roastLevel < cookLevel :
-        #every 20 seconds we recheck toastedness
-            if(time.time()-time_start) > 20 :
+    while (start_toast-roastLevel < cookLevel) and enter_retrieval is False :
+        #every 10 seconds we recheck toastedness
+            if(time.time()-time_start) > 10 :
+                
                 #rotating mallow back into view
                 pin.ChangeDutyCycle(2.5)
                 time.sleep(1.7)
@@ -151,12 +146,15 @@ def main(TL,C):
                     #adjusting for more processing
                     image = imutils.resize(image, width = 320, height =240)
                     image = image[70:220, 70:200]
+                    image = imutils.resize(image, widthe =320, height=240)
+                    
                     #image processing steps
                     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
                     #calculating toastedness
                     count += 1
                     roastLevel += RoastLevel(gray)
-
+                
+                #finding final average roastLevel
                 roastLevel = roastLevel/float(count)
 
                 #rotating mallow back to heat
@@ -165,27 +163,28 @@ def main(TL,C):
                 pin.ChangeDutyCycle(0)
                 time_start = time.time()
 
-            #reading in a frame when not processing
+            #reading in a frame when not checking the toastedness
             b, image = videoCap.read()
 
             #adjusting for more processing
             image = imutils.resize(image, width = 320, height =240)
             image = image[70:220, 70:200]
-
+            image = imutils.resize(image, widthe =320, height=240)
+            
             #displaying the toastedness level of the desired contour
             #location of printing
             c_x = 0 
             c_y = 75
         
-            #draw contour and output roast val 
-            cv2.drawContours(image, [Mallow_Cont], -1, RED,1)
+            #draw contour (not enabled now) and output roast val 
+            #cv2.drawContours(image, [Mallow_Cont], -1, RED,1)
             cv2.putText(image, "Last Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-            cv2.putText(image, str(roastLevel), (50,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+            cv2.putText(image, str(roastLevel), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
             
-
-            image = imutils.resize(image, width = 320, height = 240)
+            #displaying image
             cv2.imshow("Image", image)
             cv2.waitKey(1)
+            
     print("final roast level is:")
     print (roastLevel)
     pin.ChangeDutyCycle(7)
