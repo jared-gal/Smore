@@ -15,6 +15,7 @@ import time
 #basic color definitions
 RED = (255,0,0)
 WHITE = (255,255,255)
+BLACK = (0,0,0)
 
 #contour that is the mallow
 Mallow_Cont = []
@@ -105,7 +106,7 @@ def main(TL,C):
 
     #turning on the heating element and aligning the mallow
     GPIO.output(13,1)
-    time.sleep(1)
+    time.sleep(4.5)
     
     #aligning the mallow
     pin = GPIO.PWM(5,50)
@@ -117,50 +118,25 @@ def main(TL,C):
     #init roast level
     count = 0
     roastLevel = 0
-    for i in range(0,5):
-        #reading in new image each time
-        b, image = videoCap.read()
-
-        #resizing with only mallow selected
-        image = imutils.resize(image, width = 320, height =240)
-        image = image[50:220, 80:220]
-        image = imutils.resize(image,width=320,height=240)
-    
-        #image processing steps
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
-        
-        #updating values
-        count += 1
-        roastLevel += RoastLevel(gray)
-
-    #final values for start_roast and initial roastLevel
-    start_toast = roastLevel/float(count) - 10
-    roastLevel = start_toast
+    start_toast = 0
 
     pin.ChangeDutyCycle(7.5)
     time.sleep(2)
     pin.ChangeDutyCycle(0)
 
     #converting toast level to darkness value
-    cookLevel = 8 +  Toast_Level*1.5
+    cookLevel = 1 +  Toast_Level*1.5
     
-    #determining what the target darkness level is
-    print("Starting Roast Level is:")
-    print ((start_toast))
-    print("Cook Level is:")
-    print ((cookLevel))
-    print("Target Roast Level is:")
-    print ((start_toast - cookLevel))
     
     time_start = time.time()
     time_begin = time.time()
     update = True
-
+    init = True
+    init_2 = True
     
     while (start_toast-roastLevel < cookLevel) and (enter_retrieval is False) and (time.time() - time_begin < 300):
         #every 10 seconds we recheck toastedness
-            if(time.time()-time_start) > 10 :
-                
+            if(time.time()-time_start) > 10 or init:
                 #rotating mallow back into view
                 pin.ChangeDutyCycle(2.5)
                 time.sleep(1.7)
@@ -178,7 +154,7 @@ def main(TL,C):
 
                     #adjusting for more processing
                     image = imutils.resize(image, width = 320, height =240)
-                    image = image[50:220, 80:220]
+                    image = image[40:220, 70:220]
                     image = imutils.resize(image, width =320, height=240)
                     
                     #image processing steps
@@ -190,7 +166,19 @@ def main(TL,C):
                 
                 #finding final average roastLevel
                 roastLevel = roastLevel/float(count)
+                if init is False and init_2 is True:
+                    start_toast = roastLevel -1
+                    init_2 = False
 
+                    #determining what the target darkness level is
+                    print("Starting Roast Level is:")
+                    print ((start_toast))
+                    print("Cook Level is:")
+                    print ((cookLevel))
+                    print("Target Roast Level is:")
+                    print ((start_toast - cookLevel))
+
+                init = False
                 #rotating mallow back to heat
                 pin.ChangeDutyCycle(7.5)
                 time.sleep(1.7)
@@ -202,18 +190,18 @@ def main(TL,C):
 
             #adjusting for more processing
             image = imutils.resize(image, width = 320, height =240)
-            image = image[50:220, 80:220]
+            image = image[40:220, 70:220]
             image = imutils.resize(image, width =320, height=240)
             
             #displaying the toastedness level of the desired contour
             #location of printing
-            c_x = 0 
+            c_x = 20
             c_y = 75
         
             #draw contour (not enabled now) and output roast val 
             #cv2.drawContours(image, [Mallow_Cont], -1, RED,1)
-            cv2.putText(image, "Last Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-            cv2.putText(image, str(roastLevel), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
+            cv2.putText(image, "Last Roast Value", (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2)
+            cv2.putText(image, str(round(roastLevel)), (20,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2)
             
             #displaying image
             cv2.imshow("Image", image)

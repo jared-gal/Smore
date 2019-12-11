@@ -39,7 +39,7 @@ def ShapeDetector(c):
     approx = cv2.approxPolyDP(c, .01*peri, True)
 
     #detecting if a contour large enough to be the marshmallow is found
-    if peri > 100:
+    if peri > 200:
         status = "Valid"
 
     #returning the contour status as potential mallow or not
@@ -101,7 +101,7 @@ def main():
         image = imutils.resize(image, width=320, height = 240)
         
         #selecting only a particular area of the image based on limitations of mallow 
-        image = image[50:220,80:220] 
+        image = image[40:220,70:220] 
         image = imutils.resize(image,width=320, height =240)
         
         #image processing steps

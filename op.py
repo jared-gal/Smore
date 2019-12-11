@@ -6,13 +6,20 @@ import pick_contour as pc
 import rt_one_side as rt
 import retrieve as re
 import time
+import RPi.GPIO as GPIO
 import os
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(13, GPIO.OUT)
+GPIO.output(13,0)
 
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb1')
 
 if __name__ == "__main__":
-   
+    
+    GPIO.cleanup()
+
    # getting the desired contour for the mallow
     C,I = pc.main()
 
