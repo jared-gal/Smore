@@ -29,6 +29,7 @@ start_toast = 255
 #forced exit from program
 def gpio17(channel):
     print("forced retrieval")
+    GPIO.output(WHATPINUSE,1)
     global enter_retrieval 
     enter_retrieval = True
 
@@ -84,6 +85,10 @@ def main(TL,C):
 
     #interrupt to force mallow retrieval if necessary
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    
+    #pin used to turn on heating element
+    GPIO.setup(WHATPINUSE, GPIO.OUT)
+    GPIO.output(WHATPINUSE,0)
 
     #basic video capture object
     videoCap = cv2.VideoCapture(0)
@@ -95,9 +100,16 @@ def main(TL,C):
     else:
         print("camera found")
 
+    #turning on the heating element and aligning the mallow
+    GPIO.output(WHATPINUSE,1)
+    time.sleep(1)
+    
+    #aligning the mallow
     pin = GPIO.PWM(5,50)
     pin.start(2.5)
-
+    time.sleep(1)
+    
+    
     #init roast level
     count = 0
     roastLevel = 0
@@ -194,9 +206,15 @@ def main(TL,C):
             #displaying image
             cv2.imshow("Image", image)
             cv2.waitKey(1)
-            
+       
+    #turning off heating element
+    GPIO.output(WHATPINUSE,0)
+    
+    #outputting final roast level
     print("final roast level is:")
     print (roastLevel)
+    
+    #aligning skewers for extraction
     pin.ChangeDutyCycle(7)
     time.sleep(.5)
     pin.ChangeDutyCycle(0)
