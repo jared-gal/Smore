@@ -97,37 +97,47 @@ def main(TL,C):
 
     pin = GPIO.PWM(5,50)
     pin.start(2.5)
-    print("Turn up")
-    #reading in an initial frame
-    b, image = videoCap.read()
-
-    image = imutils.resize(image, width = 320, height =240)
-    image = image[70:220, 70:220]
-    #image processing steps
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
 
     #init roast level
     count = 0
     roastLevel = 0
     for i in range(0,5):
+        #reading in new image each time
+        b, image = videoCap.read()
+
+        #resizing with only mallow selected
+        image = imutils.resize(image, width = 320, height =240)
+        image = image[70:220, 70:220]
+        image = imutils.resize(image,width=320,height=240)
+    
+        #image processing steps
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
+        
+        #updating values
         count += 1
         roastLevel += RoastLevel(gray)
 
+    #final values for start_roast and initial roastLevel
     start_toast = roastLevel/float(count)
     roastLevel = start_toast
-    print("turn down")
+
     pin.ChangeDutyCycle(7.5)
     time.sleep(2)
     pin.ChangeDutyCycle(0)
 
     #converting toast level to darkness value
     cookLevel = 10 +  Toast_Level*2
-    print("Cook Level is")
-    print (cookLevel)
-    time_start = time.time() 
+    
+    #determining what the target darkness level is
+    print("Darkness is")
+    print ((start_toast - cookLevel))
+    
+    time_start = time.time()
+    time_begin = time.time()
     update = True
 
-    while (start_toast-roastLevel < cookLevel) and enter_retrieval is False :
+    
+    while (start_toast-roastLevel < cookLevel) and (enter_retrieval is False) and (time.time() - time_begin < 300):
         #every 10 seconds we recheck toastedness
             if(time.time()-time_start) > 10 :
                 
