@@ -29,7 +29,7 @@ start_toast = 255
 #forced exit from program
 def gpio17(channel):
     print("forced retrieval")
-    GPIO.output(WHATPINUSE,1)
+    GPIO.output(13,0)
     global enter_retrieval 
     enter_retrieval = True
 
@@ -87,8 +87,8 @@ def main(TL,C):
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
     
     #pin used to turn on heating element
-    GPIO.setup(WHATPINUSE, GPIO.OUT)
-    GPIO.output(WHATPINUSE,0)
+    GPIO.setup(13, GPIO.OUT)
+    GPIO.output(13,0)
 
     #basic video capture object
     videoCap = cv2.VideoCapture(0)
@@ -101,7 +101,7 @@ def main(TL,C):
         print("camera found")
 
     #turning on the heating element and aligning the mallow
-    GPIO.output(WHATPINUSE,1)
+    GPIO.output(13,1)
     time.sleep(1)
     
     #aligning the mallow
@@ -208,7 +208,7 @@ def main(TL,C):
             cv2.waitKey(1)
        
     #turning off heating element
-    GPIO.output(WHATPINUSE,0)
+    GPIO.output(13,0)
     
     #outputting final roast level
     print("final roast level is:")
