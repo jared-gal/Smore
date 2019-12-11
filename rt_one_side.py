@@ -75,6 +75,7 @@ def main(TL,C):
     #global variables necessary
     global Mallow_Cont
     global Toast_level
+    global enter_retrieval
     
     Mallow_Cont = C
     Toast_Level = TL
@@ -85,6 +86,8 @@ def main(TL,C):
 
     #interrupt to force mallow retrieval if necessary
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    #setting up callbacks
+    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
     
     #pin used to turn on heating element
     GPIO.setup(13, GPIO.OUT)
@@ -108,6 +111,7 @@ def main(TL,C):
     pin = GPIO.PWM(5,50)
     pin.start(2.5)
     time.sleep(1)
+    pin.start(0)
     
     
     #init roast level
@@ -119,7 +123,7 @@ def main(TL,C):
 
         #resizing with only mallow selected
         image = imutils.resize(image, width = 320, height =240)
-        image = image[70:220, 70:220]
+        image = image[50:220, 80:220]
         image = imutils.resize(image,width=320,height=240)
     
         #image processing steps
@@ -130,7 +134,7 @@ def main(TL,C):
         roastLevel += RoastLevel(gray)
 
     #final values for start_roast and initial roastLevel
-    start_toast = roastLevel/float(count)
+    start_toast = roastLevel/float(count) - 10
     roastLevel = start_toast
 
     pin.ChangeDutyCycle(7.5)
@@ -138,10 +142,14 @@ def main(TL,C):
     pin.ChangeDutyCycle(0)
 
     #converting toast level to darkness value
-    cookLevel = 10 +  Toast_Level*2
+    cookLevel = 8 +  Toast_Level*1.5
     
     #determining what the target darkness level is
-    print("Darkness is")
+    print("Starting Roast Level is:")
+    print ((start_toast))
+    print("Cook Level is:")
+    print ((cookLevel))
+    print("Target Roast Level is:")
     print ((start_toast - cookLevel))
     
     time_start = time.time()
@@ -162,16 +170,20 @@ def main(TL,C):
                 roastLevel = 0
                 count = 0
                 for i in range(0,5):
+                    #small delay
+                    time.sleep(.1)
+
                     #reading in a frame
                     b, image = videoCap.read()
 
                     #adjusting for more processing
                     image = imutils.resize(image, width = 320, height =240)
-                    image = image[70:220, 70:200]
-                    image = imutils.resize(image, widthe =320, height=240)
+                    image = image[50:220, 80:220]
+                    image = imutils.resize(image, width =320, height=240)
                     
                     #image processing steps
                     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
+                    
                     #calculating toastedness
                     count += 1
                     roastLevel += RoastLevel(gray)
@@ -190,8 +202,8 @@ def main(TL,C):
 
             #adjusting for more processing
             image = imutils.resize(image, width = 320, height =240)
-            image = image[70:220, 70:200]
-            image = imutils.resize(image, widthe =320, height=240)
+            image = image[50:220, 80:220]
+            image = imutils.resize(image, width =320, height=240)
             
             #displaying the toastedness level of the desired contour
             #location of printing

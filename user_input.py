@@ -110,14 +110,14 @@ def main():
 
     print("main")
     #setting up callbacks
-    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 500)
-    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 500)
-    GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 500)
-    GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 500)
+    GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
+    GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 300)
+    GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 300)
+    GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 300)
     
     #continuously updating TFT
     while not Confirmed:
-        print("Procee")
+
         #reading what image to display
         image_toast = pick_im()
         im_rect = image_toast.get_rect()
@@ -133,7 +133,7 @@ def main():
                 screen.blit(text_surface, rect)
 
         else:
-            my_buttons = {'Correct Amount of Toastedness?':(160,120), 'Confirm':(290,15), 'Cancel':(290,225)}
+            my_buttons = {'Correct Toastedness Level?':(160,180), 'Confirm':(290,15), 'Cancel':(290,225)}
             for my_text, text_pos in my_buttons.items():
                 text_surface = my_font.render(my_text, True, WHITE)
                 rect = text_surface.get_rect(center=text_pos)

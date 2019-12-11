@@ -101,13 +101,13 @@ def main():
         image = imutils.resize(image, width=320, height = 240)
         
         #selecting only a particular area of the image based on limitations of mallow 
-        image = image[70:220, 70:220] 
-        image = imutils.resize(image,width=320, height -=240)
+        image = image[50:220,80:220] 
+        image = imutils.resize(image,width=320, height =240)
         
         #image processing steps
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
-        thresh = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
+        thresh = cv2.threshold(blurred, 120, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
 
         #contour finding
         conts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -125,7 +125,7 @@ def main():
             if status == "Valid":
                 
                 #draw contour on image
-                cv2.drawContours(n_im, conts, i, RED,-1)
+                cv2.drawContours(n_im, conts, i, RED,2)
 
                 #show the image with one contour
                 cv2.imshow("Image", n_im)
