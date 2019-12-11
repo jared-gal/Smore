@@ -24,25 +24,21 @@ end = False
 def gpio17_pc(channel):
     global end
     end = True
-    print("Proceeding")
 
 #27 says to cycle to another contour
 def gpio27_pc(channel):
     global Next_Cont
     Next_Cont = True
-    print("Next Contour")
 
-
-
-
-#this function detects the presence of a marshmallow
+#this function detects the presence of contours that could be marshmallows
 def ShapeDetector(c):
+    
     #base case of no mallow
     status = "Invalid"
     peri = cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, .01*peri, True)
 
-    #detecting if a rectangular shape is found (cross section of marshmallow
+    #detecting if a contour large enough to be the marshmallow is found
     if peri > 100:
         status = "Valid"
 
@@ -51,27 +47,23 @@ def ShapeDetector(c):
 
 
 def main():
-    
-    #os.putenv('SDL_VIDEODRIVER','fbcon')
-    #os.putenv('SDL_FBDEV','/dev/fb1')
-    #os.putenv('SDL_MOUSEDRV', 'TSLIB')
-    #os.putenv('SDL_MOUSEDEV', '/dev/input/touchscreen')
-
-
 
     #defining global variables
     global Proceed
     global Next_Cont
     global end
 
-    #setting up relevant GPIO pins
+    #setting up relevant GPIO pins for interrupts
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
     GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
+    #aligning the servo properly for analysis
     GPIO.setup(5, GPIO.OUT)
     pin = GPIO.PWM(5,50)
     pin.start(2.5)
+    time.sleep(2)
+    pin.start(0)
 
     
     #to hold the final mallow contour
@@ -95,52 +87,47 @@ def main():
     #reading in an initial frame
     b, image = videoCap.read()
     end = False
-    #continuously reading in camera data
 
-    #start time
+    #start time to allow for a short feed of setup
     start_time = time.time()
 
+    #continuously reading camera data until the desired contour is identified
     while not end:
 
         #reading in a frame
         b, image = videoCap.read()
 
         #adjusting for more processing
-        #im_resize = imutils.resize(image, width=300)
-        #ratio = image.shape[0]/float(im_resize.shape[0])
         image = imutils.resize(image, width=320, height = 240)
+        
+        #selecting only a particular area of the image based on limitations of mallow 
         image = image[70:220, 70:220] 
+        image = imutils.resize(image,width=320, height -=240)
+        
         #image processing steps
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  #grayscale
         blurred = cv2.GaussianBlur(gray, (5,5), 0)          #slight blurring
         thresh = cv2.threshold(blurred, 100, 255, cv2.THRESH_BINARY)[1]  #thresholding for shape
 
-        #contour finding and rectangle identification
+        #contour finding
         conts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         conts = imutils.grab_contours(conts)
         
-        count = 0
         #find shapes based on contours
         for i in range(len(conts)):
             Proceed = False
             Next_Cont = False
             
-            c_x = 75
-            c_y = 75
+            #determining the validity of a given contour
             status = ShapeDetector(conts[i])
+            #image copy so we can see one contour at a time
             n_im = image.copy()
             if status == "Valid":
                 
-        #convert the contour to a drawable shape
-                #c_new = (c.astype("float")*ratio).astype('int')
-                #draw name of shape on contour at (x,y) coords
+                #draw contour on image
                 cv2.drawContours(n_im, conts, i, RED,-1)
-                cv2.putText(n_im, status, (c_x,c_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-                #displaying the associated toastedness
-                text = "Contour #" + str(count)
-                
-                cv2.putText(n_im, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2)
-                #cv2.imshow("Gray", gray)
+
+                #show the image with one contour
                 cv2.imshow("Image", n_im)
                 cv2.waitKey(1)
 
