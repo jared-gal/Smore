@@ -345,9 +345,8 @@ After the claw was designed and operating, the rack and pinion was designed to c
   <p>After thresholding the image, it was then analyzed for contours using the findContours function. Each contour was then run to a user created function that determined if the specific contour was potentially valid for being a marshmallow. The most reliable and simple solution to the problem was to validate a contour based on its perimeter. Since the image had been focused on only the potential marshmallow area, the contour corresponding to it was significantly longer than anything else in the image, and thus gave the correct contour each time tested, once finding an appropriate cutoff level. In order to assure proper alignment in the contour finding stage, as well as for consistency later in measurement, the servo controlling the marshmallow skewer was also set to an initial position before identifying the contour. 
   </p>
   <p>Running the process then went through the above steps for an initial runoff time of three seconds before it began to actively search for the marshmallow. The above step was done to allow the camera to adjust to light settings as well as refocus for optimal execution. Once it finished the runoff time, the program allowed the user to select which contour was correct using buttons on the piTFT. To do this, each potential marshmallow contour was stepped through for a given image until one of two conditions happened. If the user selected a contour as corresponding to the marshmallow, then this contour was recorded and the program ended. However, if none of the contours in the frame were selected, then the next frame was loaded and analyzed in the same sequence. In the figure below the displayed frame with a contour can be seen. </p>
-  <div class="col-sm-6">
     <img src="Pics/pick_c.png" alt="pick_c" style="width:350px; height:350px;" class="center">
-  </div>
+
   <p>Image of the pick_contour.py Program Detecting a Marshmallow, Blue Line is the Contour</p>
   <br></br>
 
@@ -356,14 +355,14 @@ After the claw was designed and operating, the rack and pinion was designed to c
 
   <h4>user_in.py</h4>  
   <p>The program developed in this stage was partially a reskin of previous programs written throughout the semester of class. The display in its initial stage can be seen in the first figure below, which displays a generic s’more image as well as user options: select - which selects the current level of toastiness displayed as the toast level,  lighter - which decreases the level of toastiness by one stage, darker - which increases the level of toastiness by one stage, and quit - which will quit the program and execution of the SMORE software. The above options are tied to the corresponding adjacent button on the piTFT. After cycling to a desired toastiness level (1-10), and selecting the option, a second confirmation page is displayed which asks the user if the level of toastiness is correct, and gives two options, confirm, which confirms the level, or cancel, which deselects and allows the user to change the level to a different value. The second figure below displays this screen. Once the user has confirmed a desired toast level value, the information is recorded and sent back to be used later, and the program ends. </p>
-  <div class="col-sm-6">
+
     <img src="Pics/usr_in.png" alt="usr_in" style="width:350px; height:350px;" class="center">
-  </div>
+
   <p>The Base Screen of user_in.py with Choice Options</p>
   <br></br>
-  <div class="col-sm-6">
+ 
     <img src="Pics/usr_in_2.png" alt="usr_in_2" style="width:350px; height:350px;" class="center">
-  </div>
+
   <p>Second Stage of user_in.py program with a Selected Toast Level of Four</p>
   <br></br>
   
@@ -376,14 +375,14 @@ After the claw was designed and operating, the rack and pinion was designed to c
   <p>Once the monitoring and measurement aspects were complete, the next logic was to tackle in which way the toasting process would be determined as complete as well as implementing several features to be able to manually end the toasting process and begin retrieval. To evaluate the toast level of the marshmallow, an initial value is set to determine the base darkness of the marshmallow, and then a target value is calculated subtracting 5*toast_level from the base darkness level, where toast_level is the desired value passed in from the user_in script. Upon reaching the calculated toast value, the rt_one_side script will complete execution. As a safety measure, should the marshmallow be reaching a toastedness that is potentially too close to catching fire, the user can press one of the buttons on the piTFT that will force the toasting program to complete and begin retrieval of the marshmallow. One last note is that for each toast read, an average of five readings is taken to help mitigate any issues from deviations in one frame as to not prematurely trigger a retrieval. The start value is also read after several seconds of operation to allow the camera feed to stabilize after some initial reads. </p>
   <p>The final aspect of control is manipulating the heating element. The program is able to turn on the heating element at the beginning of operation by sending a high signal to the relay controlling the heating element, and upon completion of the program the signal is written low to turn off the heating element. During operation a live camera feed is displayed to the user of the marshmallow. The screen also displays the last read toastiness level on the image in the upper left corner. The first figure shows an example of the feed during operation. Additionally, the program prints in the terminal the read starting toast level, the level of toasting to be done (cook level), and the target toast level. A readout of these can be seen in the second figure.</p>
 
-  <div class="col-sm-6">
+
     <img src="Pics/rt_one.png" alt="rt_one" style="width:350px; height:350px;" class="center">
-  </div>
+
 <p>Camera Feed During rt_one_side Operation</p>
   <br></br>
-  <div class="col-sm-6">
+
     <img src="Pics/rt_one_term.png" alt="rt_one_term" style="width:350px; height:350px;" class="center">
-  </div>
+
 <p>Terminal Printout of Relevant rt_one_side Values</p>
   <br></br>
 
