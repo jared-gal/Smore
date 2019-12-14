@@ -346,19 +346,26 @@ After the claw was designed and operating, the rack and pinion was designed to c
   </p>
   <p>Running the process then went through the above steps for an initial runoff time of three seconds before it began to actively search for the marshmallow. The above step was done to allow the camera to adjust to light settings as well as refocus for optimal execution. Once it finished the runoff time, the program allowed the user to select which contour was correct using buttons on the piTFT. To do this, each potential marshmallow contour was stepped through for a given image until one of two conditions happened. If the user selected a contour as corresponding to the marshmallow, then this contour was recorded and the program ended. However, if none of the contours in the frame were selected, then the next frame was loaded and analyzed in the same sequence. In the figure below the displayed frame with a contour can be seen. </p>
   <div class="col-sm-6">
-    <img src="Pics/pick_c.png" alt="Image of the pick_contour.py Program Detecting a Marshmallow, Blue Line is the Contour" style="width:350px; height:350px;" class="center">
+    <img src="Pics/pick_c.png" alt="pick_c" style="width:350px; height:350px;" class="center">
   </div>
+  <p>Image of the pick_contour.py Program Detecting a Marshmallow, Blue Line is the Contour</p>
+  <br></br>
+
   </p>
   <p>After the user had properly identified the marshmallow, they were prompted to select a level of toastiness for the operation of the device. The interface for this selection menu leveraged buttons from the piTFT to cycle through options for the level of darkness desired for the marshmallow. The user_in.py section contains more details about the precise implementation.</p>  
 
   <h4>user_in.py</h4>  
   <p>The program developed in this stage was partially a reskin of previous programs written throughout the semester of class. The display in its initial stage can be seen in the first figure below, which displays a generic s’more image as well as user options: select - which selects the current level of toastiness displayed as the toast level,  lighter - which decreases the level of toastiness by one stage, darker - which increases the level of toastiness by one stage, and quit - which will quit the program and execution of the SMORE software. The above options are tied to the corresponding adjacent button on the piTFT. After cycling to a desired toastiness level (1-10), and selecting the option, a second confirmation page is displayed which asks the user if the level of toastiness is correct, and gives two options, confirm, which confirms the level, or cancel, which deselects and allows the user to change the level to a different value. The second figure below displays this screen. Once the user has confirmed a desired toast level value, the information is recorded and sent back to be used later, and the program ends. </p>
   <div class="col-sm-6">
-    <img src="Pics/usr_in.png" alt="The Base Screen of user_in.py with Choice Options" style="width:350px; height:350px;" class="center">
+    <img src="Pics/usr_in.png" alt="usr_in" style="width:350px; height:350px;" class="center">
   </div>
+  <p>The Base Screen of user_in.py with Choice Options</p>
+  <br></br>
   <div class="col-sm-6">
-    <img src="Pics/usr_in_2.png" alt="Second Stage of user_in.py program with a Selected Toast Level of Four" style="width:350px; height:350px;" class="center">
+    <img src="Pics/usr_in_2.png" alt="usr_in_2" style="width:350px; height:350px;" class="center">
   </div>
+  <p>Second Stage of user_in.py program with a Selected Toast Level of Four</p>
+  <br></br>
   
 <h3>Toasting</h3>
 <p>Once all of the setup steps described above had been finished, the software flow of SMORE was to then shift towards handling the toasting and monitoring of the marshmallow. The original goal of the device was to roast the entire circumference of the marshmallow, but after several operational issues (discussed further in the Results section), functionality was limited to analysis and roasting of only one particular side of a marshmallow. In this slightly reduced execution, the main elements were: ensure that a consistent side is aligned for the toasting and measuring phases of operation by using a servo, analyze only the marshmallow contour for toastiness level, determine when the marshmallow has reached the desired toast level, control the heating element, and finally proved some interrupt ability for the user. The entirety of the final functionality is contained in the rt_one_side program which has a detailed discussion below. Several other iterations were also created for the original operational style of complete toasting, and the final working stage is contained in the program read_toast_update on Github. </p>
@@ -370,11 +377,15 @@ After the claw was designed and operating, the rack and pinion was designed to c
   <p>The final aspect of control is manipulating the heating element. The program is able to turn on the heating element at the beginning of operation by sending a high signal to the relay controlling the heating element, and upon completion of the program the signal is written low to turn off the heating element. During operation a live camera feed is displayed to the user of the marshmallow. The screen also displays the last read toastiness level on the image in the upper left corner. The first figure shows an example of the feed during operation. Additionally, the program prints in the terminal the read starting toast level, the level of toasting to be done (cook level), and the target toast level. A readout of these can be seen in the second figure.</p>
 
   <div class="col-sm-6">
-    <img src="Pics/rt_one.png" alt="Camera Feed During rt_one_side Operation" style="width:350px; height:350px;" class="center">
+    <img src="Pics/rt_one.png" alt="rt_one" style="width:350px; height:350px;" class="center">
   </div>
+<p>Camera Feed During rt_one_side Operation</p>
+  <br></br>
   <div class="col-sm-6">
-    <img src="Pics/rt_one_term.png" alt="Terminal Printout of Relevant rt_one_side Values" style="width:350px; height:350px;" class="center">
+    <img src="Pics/rt_one_term.png" alt="rt_one_term" style="width:350px; height:350px;" class="center">
   </div>
+<p>Terminal Printout of Relevant rt_one_side Values</p>
+  <br></br>
 
 <h3>Retrieval</h3>
 <p>The final stage of execution for SMORE is to physically retrieve the marshmallow after it has completed roasting. The software to support the program was contained in one program, retrieve.py which handled all necessary logic and operations. Further discussion of the program is in the retrieve.py section. The hardware behind the mechanism has been covered in the hardware description above. Thus, the only components of the system that needed to be controlled were the servo that opens and closes the claw mechanism and the stepper motor that drives the rack and pinion to carry the claw to the marshmallow. </p>
