@@ -267,6 +267,7 @@ As seen in Figure 1, the high level design of SMORE is quite simple. One motor c
 
     <div class="col-sm-4">
       <img src="Pics/Diagram.png" alt="Design Diagram" style="width:350px; height:350px;">
+      <p><center>High Level Design Overview of SMORE</center></p>
     </div>
 
   </div>
@@ -283,9 +284,11 @@ As seen in Figure 1, the high level design of SMORE is quite simple. One motor c
   <p>The primary hardware aspect of the tool is the marshmallow toasting capability. The heating element was obtained from a toaster generously donated from Joe, which was disassembled to acquire the mica and tungsten heating element from within. </p>
   <div class="col-sm-6">
       <img src="Pics/toaster.jpg" alt="Toaster Shots" style="width:250px; height:250px;" class="center">
+    <p><center>The ancient toaster sacrificed to the S'mores Gods</center></p>
   </div>
   <div class="col-sm-6">
       <img src="Pics/heat_element.JPG" alt="Toaster Shots" style="width:350px; height:250px;">
+    <p><center>The heating element doing its scary, scary thing </center></p>
   </div>
   
   <p>The heating element runs off wall power, which we protected via a 10A 120V relay controlled by the Raspberry Pi. The heating element is elevated from a laser cut acrylic platform using metal standoffs to isolate it from any flammable materials. The marshmallow sits on a two pronged dowel attached to a servo, which slowly rotates the marshmallow to allow it to roast in a controlled fashion. </p>
@@ -296,23 +299,27 @@ As seen in Figure 1, the high level design of SMORE is quite simple. One motor c
   <h3> S'more Assembly  </h3>
   <p>The most challenging mechanical aspect of SMORE has been the assembly component. Starting out with the example mechanical claw found at (https://www.youmagine.com/designs/simple-robot-claw), the team modified the designs to account for gripping a larger item and to have automatic actuation via servo. </p>
   <img src="Pics/claw_inspo.JPG" alt="Ain't no Laws when you're building claws" style="width:350px; height:350px;" class="center">
-  <p>The gripping arms of the claw had to be able to hold a graham cracker without dropping it on both sides, support chocolate or other optional toppings, and drag the marshmallow off the prong and onto the graham cracker plate. The claw also had to allow a user to easily remove the assembled smore after roasting was complete. In order to accomplish this, the claw was redesigned, as shown in figure 4, to have a graham cracker sized crevice to insert and easily remove the components of the smore. The component was 3D printed in the RPL. </p>
+  <p><center>The inspiration found online for the claw design</center></p>
+  <p>The gripping arms of the claw had to be able to hold a graham cracker without dropping it on both sides, support chocolate or other optional toppings, and drag the marshmallow off the prong and onto the graham cracker plate. The claw also had to allow a user to easily remove the assembled smore after roasting was complete. In order to accomplish this, the claw was redesigned, as shown below, to have a graham cracker sized crevice to insert and easily remove the components of the smore. The component was 3D printed in the RPL. </p>
   <img src="Pics/claw_proto.JPG" alt=" claw CAD" style="width:350px; height:350px;" class = "center">
+  <p><center>Prototype of claw mechanism used to retrieve marshmallow</center></p>
   <p>The mounting end of the claw was also modified to hold a servo, such that it could be automatically opened and closed on command when the marshmallow was completely toasted. 
 
 After the claw was designed and operating, the rack and pinion was designed to carry the claw to the marshmallow and remove it from the prong. In order to accomplish this, two mounts were designed to hold the claw up by the servo, which would sit on a sliding panel. The panel would be pushed back and forth by linear teeth interfacing with a gear attached to a stepper motor, which would push the platform back and forth. The claw-panel assembly was kept in place by the rack, which the panel slid back and forth along. The entire rack and pinion holder system was designed to be laser cut out of acrylic for easy prototyping and iterating. 
   </p>
   <img src="Pics/rack_pinion.JPG" alt="Rack_Pinion" style="width:350px; height:350px;" class="center">
-
+<p><center>Rack and Pinion mechanism to move claw</center></p>
    <h3> Chassis </h3>
   <p>  After all the individual components were designed and tested, it was time for integration. Due to extreme temperatures within the chassis from the heating element, we opted to insulate the design with fiberglass, covered in aluminum foil so as not to get fiberglass on any food surfaces. The fiberglass did an excellent job shielding the chassis and the outside from heat. 
   </p>
   
   <div class="col-sm-6">
     <img src="Pics/manufacturing.JPG" alt="yeahboi" style="width:350px; height:350px;" class="center">
+    <p><center>Safety first! Cutting fiberglass in the paint booth </center></p>
   </div>
    <div class="col-sm-6">
     <img src="Pics/jared_cut.JPG" alt="snipsnip" style="width:350px; height:350px;" class="center">
+     <p><center>Careful cutting of the fiberglass to insulate the walls</center></p>
   </div>
   
     <p>
@@ -321,9 +328,11 @@ After the claw was designed and operating, the rack and pinion was designed to c
   
     <div class="col-sm-6">
     <img src="Pics/front_annotated.png" alt="front" style="width:350px; height:350px;" class="center">
+      <p><center>Major components of the design</center></p>
   </div>
    <div class="col-sm-6">
     <img src="Pics/CAD_annotated.png" alt="CAD" style="width:350px; height:350px;" class="center">
+     <p><center>Further major components of the design</center></p>
   </div>
   
   
