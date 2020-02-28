@@ -9,18 +9,6 @@ import os
 import sys
 pygame.init()
 
-#TFT Stuff
-#TODO
-
-
-#setting up relevant GPIO pins
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(22, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-
-
 #global variables
 Toast_Level = 0
 Confirmed = False
@@ -49,7 +37,7 @@ default = pygame.image.load("default.jpg")
 
 #interrupts for the two buttons
 #increase toast level
-def gpio22(channel):
+def gpio23(channel):
     if Proceed is False:
         global Toast_Level
         Toast_Level = Toast_Level + 1
@@ -58,7 +46,7 @@ def gpio22(channel):
         print("More Toastedness")
 
 #decrease Toast Level
-def gpio23(channel):
+def gpio22(channel):
     if Proceed is False:
         global Toast_Level
         Toast_Level = Toast_Level - 1
@@ -103,14 +91,29 @@ def pick_im():
     }
     return switcher.get(Toast_Level, default)
 
-if __name__ == "__main__":
+def main():
 
+
+
+    #setting up relevant GPIO pins
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(22, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+
+
+    #declaring the global variables of program
+    global Proceed
+    global Confirmed
+    global Toast_Level
+
+    print("main")
     #setting up callbacks
     GPIO.add_event_detect(17, GPIO.FALLING, callback = gpio17, bouncetime = 300)
     GPIO.add_event_detect(27, GPIO.FALLING, callback = gpio27, bouncetime = 300)
     GPIO.add_event_detect(22, GPIO.FALLING, callback = gpio22, bouncetime = 300)
     GPIO.add_event_detect(23, GPIO.FALLING, callback = gpio23, bouncetime = 300)
-    
     
     #continuously updating TFT
     while not Confirmed:
@@ -121,7 +124,7 @@ if __name__ == "__main__":
         screen.fill(BLACK)
         #blitting desired image to display
         screen.blit(image_toast, im_rect)
-
+        
         if (Proceed is False):
             my_buttons = {'Select':(290,15), 'Darker':(290,155), 'Lighter':(290,85), 'Quit':(300,225)}
             for my_text, text_pos in my_buttons.items():
@@ -130,14 +133,16 @@ if __name__ == "__main__":
                 screen.blit(text_surface, rect)
 
         else:
-            my_buttons = {'Correct Amount of Toastedness?':(160,120), 'Confirm':(290,15), 'Cancel':(290,225)}
+            my_buttons = {'Correct Toastedness Level?':(160,180), 'Confirm':(290,15), 'Cancel':(290,225)}
             for my_text, text_pos in my_buttons.items():
                 text_surface = my_font.render(my_text, True, WHITE)
                 rect = text_surface.get_rect(center=text_pos)
                 screen.blit(text_surface, rect)
-
+        
         #flipping the display
         pygame.display.flip()
-
+    GPIO.cleanup()
+    print(Toast_Level)
+    return Toast_Level
 
 
